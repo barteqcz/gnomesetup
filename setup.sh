@@ -18,7 +18,6 @@ apply_theme() {
         gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME_DARK"
         gsettings set org.gnome.desktop.interface icon-theme "$ICON_THEME_DARK"
     else
-        echo "Switching to light theme..."
         gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME_LIGHT"
         gsettings set org.gnome.desktop.interface icon-theme "$ICON_THEME_LIGHT"
     fi
