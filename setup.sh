@@ -33,7 +33,7 @@ EOF
 sudo chmod 755 /usr/local/bin/themeswitcher.sh
 
 cat <<'EOF' | sudo tee /usr/local/bin/gtkcssupdater.sh > /dev/null
-#!/bin/sh
+#!/bin/bash
 
 gtk_files="$HOME/.config/gtk-3.0/gtk.css $HOME/.config/gtk-4.0/gtk.css"
 
