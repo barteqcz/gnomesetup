@@ -84,7 +84,7 @@ sudo chmod 644 /etc/systemd/user/themeswitcher.service
 
 cat <<EOF | sudo tee /etc/systemd/user/gtkcssupdater.service > /dev/null
 [Unit]
-Description=Theme CSS adjuster
+Description=Adw-gtk3 theme CSS adjuster
 After=graphical-session.target
 
 [Service]
@@ -100,4 +100,28 @@ sudo chmod 644 /etc/systemd/user/gtkcssupdater.service
 sudo systemctl --global enable themeswitcher.service
 sudo systemctl --global enable gtkcssupdater.service
 
-echo "Setup completed successfully."
+cat <<EOF | sudo tee /etc/systemd/system/powersaveoff.service > /dev/null
+[Unit]
+Description=Wireless card power management off
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/powersaveoff.sh
+
+[Install]
+WantedBy=default.target
+EOF
+
+cat <<EOF | sudo tee /usr/local/bin/powersaveoff.sh > /dev/null
+#!/bin/bash
+
+sleep 20
+iwconfig wlan0 power off
+EOF
+
+sudo chmod 644 /etc/systemd/system/powersaveoff.service
+sudo chmod 755 /usr/local/bin/powersaveoff.sh
+
+sudo systemctl enable powersaveoff.service
+
+echo "Setup completed successfully. Reboot recommended."
