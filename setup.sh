@@ -2,6 +2,10 @@
 
 set -e
 
+echo "Starting comprehensive system setup..."
+
+# 1. Create theme switcher script
+echo "Creating theme switcher script..."
 cat <<'EOF' | sudo tee /usr/local/bin/themeswitcher.sh > /dev/null
 #!/bin/bash
 
@@ -31,11 +35,12 @@ done
 EOF
 
 sudo chmod 755 /usr/local/bin/themeswitcher.sh
+echo "✓ Theme switcher script created"
 
+# 2. Create GTK CSS updater script
+echo "Creating GTK CSS updater script..."
 cat <<'EOF' | sudo tee /usr/local/bin/gtkcssupdater.sh > /dev/null
 #!/bin/bash
-
-gtk_files="$HOME/.config/gtk-3.0/gtk.css $HOME/.config/gtk-4.0/gtk.css"
 
 update_gtk_css() {
   choosen_color=$(gsettings get org.gnome.desktop.interface accent-color | tr -d "'")
@@ -66,7 +71,10 @@ done
 EOF
 
 sudo chmod 755 /usr/local/bin/gtkcssupdater.sh
+echo "✓ GTK CSS updater script created"
 
+# 3. Create systemd service for theme switcher
+echo "Creating theme switcher systemd service..."
 cat <<EOF | sudo tee /etc/systemd/user/themeswitcher.service > /dev/null
 [Unit]
 Description=GNOME GTK3 theme switcher
@@ -81,7 +89,10 @@ WantedBy=default.target
 EOF
 
 sudo chmod 644 /etc/systemd/user/themeswitcher.service
+echo "✓ Theme switcher service created"
 
+# 4. Create systemd service for GTK CSS updater
+echo "Creating GTK CSS updater systemd service..."
 cat <<EOF | sudo tee /etc/systemd/user/gtkcssupdater.service > /dev/null
 [Unit]
 Description=Adw-gtk3 theme CSS adjuster
@@ -96,32 +107,24 @@ WantedBy=default.target
 EOF
 
 sudo chmod 644 /etc/systemd/user/gtkcssupdater.service
+echo "✓ GTK CSS updater service created"
 
+# 5. Enable user systemd services
+echo "Enabling user systemd services..."
 sudo systemctl --global enable themeswitcher.service
 sudo systemctl --global enable gtkcssupdater.service
+echo "✓ User services enabled"
 
-cat <<EOF | sudo tee /etc/systemd/system/powersaveoff.service > /dev/null
-[Unit]
-Description=Wireless card power management off
-After=network-online.target
-
-[Service]
-ExecStart=/usr/local/bin/powersaveoff.sh
-
-[Install]
-WantedBy=default.target
-EOF
-
-cat <<EOF | sudo tee /usr/local/bin/powersaveoff.sh > /dev/null
-#!/bin/bash
-
-sleep 20
-iwconfig wlan0 power off
-EOF
-
-sudo chmod 644 /etc/systemd/system/powersaveoff.service
-sudo chmod 755 /usr/local/bin/powersaveoff.sh
-
-sudo systemctl enable powersaveoff.service
-
-echo "Setup completed successfully. Reboot recommended."
+echo ""
+echo "================================================"
+echo "Setup completed successfully!"
+echo ""
+echo "Installed components:"
+echo "1. Theme switcher (/usr/local/bin/themeswitcher.sh)"
+echo "2. GTK CSS updater (/usr/local/bin/gtkcssupdater.sh)"
+echo "3. Theme switcher service (themeswitcher.service)"
+echo "4. GTK CSS updater service (gtkcssupdater.service)"
+echo ""
+echo "Recommendations:"
+echo "- Reboot to start all services"
+echo "================================================"
