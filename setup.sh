@@ -1,42 +1,30 @@
 #!/bin/bash
 set -e
 
-# --- REQUIRE ROOT ---
-if [[ $EUID -ne 0 ]]; then
-  echo "This script must be run as root."
-  echo "Run with: sudo $0"
-  exit 1
-fi
-
 echo "Downloading and installing latest adw-gtk3 theme..."
 
 REPO="lassekongo83/adw-gtk3"
 DEST="/usr/share/themes"
 
-TMPDIR=$(mktemp -d)
-cd "$TMPDIR"
-
-# Download latest release tar.gz
-curl -s https://api.github.com/repos/$REPO/releases/latest \
+cd ~
+curl -s https://api.github.com/repos/lassekongo83/adw-gtk3/releases/latest \
   | grep "browser_download_url" \
-  | grep ".tar.gz" \
+  | grep ".tar.xz" \
   | cut -d '"' -f 4 \
   | wget -i -
 
-# Extract archive
-ARCHIVE=$(ls adw-gtk*.tar.gz)
-tar -xzf "$ARCHIVE"
+ARCHIVE=$(ls -1 adw-gtk*.tar.xz | head -n 1)
+tar -xJf "$ARCHIVE"
 
 # Ownership + permissions
-chown -R root:root adw-gtk*
-chmod -R 755 adw-gtk*
+sudo chown -R root:root adw-gtk*
+sudo chmod -R 755 adw-gtk*
 
 # Move to /usr/share/themes
-mv -a adw-gtk* "$DEST"
+sudo mv -a adw-gtk* "$DEST"
 
 # Cleanup
-cd /
-rm -rf "$TMPDIR"
+cd ~
 
 echo "Theme installed to $DEST"
 
@@ -100,11 +88,9 @@ while read -r _; do apply_theme; done &
 
 gsettings monitor org.gnome.desktop.interface accent-color |
 while read -r _; do update_gtk_css; done &
-
-wait
 EOF
 
-chmod 755 "$HOME/.local/bin/themeswitcher.sh"
+sudo chmod 755 "$HOME/.local/bin/themeswitcher.sh"
 
 echo "Creating systemd user service..."
 
@@ -124,15 +110,15 @@ Restart=on-failure
 WantedBy=default.target
 EOF
 
-chmod 644 "$HOME/.config/systemd/user/themeswitcher.service"
+sudo chmod 644 "$HOME/.config/systemd/user/themeswitcher.service"
 
-systemctl --user enable --now themeswitcher.service
+sudo systemctl --user enable --now themeswitcher.service
 
-cat <<'EOF' > /usr/local/bin/themeswitcher.sh
+cat <<'EOF' > /usr/local/bin/wifi-powersave-off.sh
 #!/bin/bash
 
 sleep 20
-iwconfig wlan0 power off
+iw dev wlan0 set power_save off
 EOF
 
 cat <<'EOF' > /etc/systemd/system/wifi-powersave-off.service
@@ -147,6 +133,7 @@ ExecStart=/usr/local/bin/wifi-powersave-off.sh
 WantedBy=default.target
 EOF
 
-chmod 644 "/etc/systemd/system/wifi-powersave-off.service"
+sudo chmod 644 "/etc/systemd/system/wifi-powersave-off.service"
+sudo systemctl enable --now wifi-powersave-off.service
 
 echo "Done."
