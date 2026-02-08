@@ -32,7 +32,7 @@ chown -R root:root adw-gtk*
 chmod -R 755 adw-gtk*
 
 # Move to /usr/share/themes
-mv -a */ "$DEST"
+mv -a adw-gtk* "$DEST"
 
 # Cleanup
 cd /
