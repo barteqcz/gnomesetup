@@ -114,23 +114,25 @@ sudo chmod 644 "$HOME/.config/systemd/user/themeswitcher.service"
 
 systemctl --user enable --now themeswitcher.service
 
-cat <<'EOF' > /usr/local/bin/wifi-powersave-off.sh
+sudo tee /usr/local/bin/wifi-powersave-off.sh > /dev/null <<'EOF'
 #!/bin/bash
 
 sleep 20
 iw dev wlan0 set power_save off
 EOF
 
-cat <<'EOF' > /etc/systemd/system/wifi-powersave-off.service
+sudo tee /etc/systemd/system/wifi-powersave-off.service > /dev/null <<'EOF'
 [Unit]
 Description=Turn WiFi power saving off at boot.
 After=network-online.target
 
 [Service]
+Type=oneshot
 ExecStart=/usr/local/bin/wifi-powersave-off.sh
+RemainAfterExit=true
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 EOF
 
 sudo chmod 644 "/etc/systemd/system/wifi-powersave-off.service"
