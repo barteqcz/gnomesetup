@@ -21,7 +21,7 @@ sudo chown -R root:root adw-gtk*
 sudo chmod -R 755 adw-gtk*
 
 # Move to /usr/share/themes
-sudo mv -a adw-gtk* "$DEST"
+sudo mv -f adw-gtk* "$DEST"
 
 # Cleanup
 cd ~
