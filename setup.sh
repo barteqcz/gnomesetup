@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "Downloading needed packages..."
+sudo pacman -Sy wget iw
+
 echo "Downloading and installing latest adw-gtk3 theme..."
 
 REPO="lassekongo83/adw-gtk3"
@@ -120,6 +123,8 @@ sudo tee /usr/local/bin/wifi-powersave-off.sh > /dev/null <<'EOF'
 sleep 20
 iw dev wlan0 set power_save off
 EOF
+
+sudo chmod 644 /usr/local/bin/wifi-powersave-off.sh
 
 sudo tee /etc/systemd/system/wifi-powersave-off.service > /dev/null <<'EOF'
 [Unit]
