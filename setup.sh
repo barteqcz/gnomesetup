@@ -112,7 +112,7 @@ EOF
 
 sudo chmod 644 "$HOME/.config/systemd/user/themeswitcher.service"
 
-sudo systemctl --user enable --now themeswitcher.service
+systemctl --user enable --now themeswitcher.service
 
 cat <<'EOF' > /usr/local/bin/wifi-powersave-off.sh
 #!/bin/bash
