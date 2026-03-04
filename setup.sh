@@ -124,7 +124,7 @@ sleep 20
 iw dev wlan0 set power_save off
 EOF
 
-sudo chmod 644 /usr/local/bin/wifi-powersave-off.sh
+sudo chmod 755 /usr/local/bin/wifi-powersave-off.sh
 
 sudo tee /etc/systemd/system/wifi-powersave-off.service > /dev/null <<'EOF'
 [Unit]
